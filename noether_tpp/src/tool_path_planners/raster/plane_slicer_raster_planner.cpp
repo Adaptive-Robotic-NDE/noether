@@ -491,9 +491,14 @@ static std::tuple<double, double> getDistancesToMinMaxCuts(const Eigen::Matrix3d
     // direction to get back to the plane
     d *= -1;
 
+    // NOTE: these must be two independent comparisons. With an `else if` the
+    // first corner sets d_max and is never tested against d_min, so a corner
+    // list that happens to arrive in ascending order leaves d_min at DBL_MAX,
+    // and the resulting cut span (and hence the number of cutting planes)
+    // explodes.
     if (d > d_max)
       d_max = d;
-    else if (d < d_min)
+    if (d < d_min)
       d_min = d;
   }
 
